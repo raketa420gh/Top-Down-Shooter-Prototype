@@ -5,21 +5,15 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     #region Variables
-
+    
+    [SerializeField] private Character character;
     [SerializeField] private Image barImage;
     [SerializeField] [Min(0.25f)] private float updateSpeed;
-
-    private Character character;
 
     #endregion
 
 
     #region Unity lifecycle
-
-    private void Awake()
-    {
-        character = GetComponentInParent<Character>();
-    }
 
     private void OnEnable()
     {

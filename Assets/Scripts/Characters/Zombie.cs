@@ -1,4 +1,5 @@
 using NaughtyAttributes;
+using Pathfinding;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyMovement))]
@@ -26,6 +27,9 @@ public class Zombie : Character
     private Collider2D selfCollider;
     private SpriteRenderer selfSpriteRenderer;
     private HealthBar healthBar;
+
+    private AIPath aiPath;
+    private AIDestinationSetter aiDestinationSetter;
     
     private Vector3 playerPosition;
     private Vector3 selfPosition;
@@ -57,6 +61,8 @@ public class Zombie : Character
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         healthBar = GetComponentInChildren<HealthBar>();
+        aiPath = GetComponent<AIPath>();
+        aiDestinationSetter = GetComponent<AIDestinationSetter>();
         
         InvokeOnCreated();
     }
@@ -175,13 +181,13 @@ public class Zombie : Character
         if (ray.collider) return;
         
         movement.Move(playerDirection);
-        movement.Rotate(-playerDirection);
+        movement.Rotate(playerDirection);
         animation.SetWalkAnimationTrigger();
     }
     
     private void AttackState()
     {
-        movement.Rotate(-playerDirection);
+        movement.Rotate(playerDirection);
         
         attackTimer -= Time.deltaTime;
 

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
@@ -20,7 +19,6 @@ public class Player : Character
     private PlayerAnimation animation;
     private Collider2D selfCollider;
     private SpriteRenderer selfSpriteRenderer;
-    private HealthBar healthBar;
     private Camera camera;
     private float currentShootCooldown;
 
@@ -35,7 +33,6 @@ public class Player : Character
         animation = GetComponent<PlayerAnimation>();
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        healthBar = GetComponentInChildren<HealthBar>();
         camera = Camera.main;
         
         InvokeOnCreated();
@@ -110,7 +107,6 @@ public class Player : Character
         base.Death();
         animation.PlayDeathAnimation();
         selfSpriteRenderer.sortingOrder = -1;
-        healthBar.enabled = false;
         selfCollider.enabled = false;
         movement.enabled = false;
         movement.SelfRigidbody.Sleep();
