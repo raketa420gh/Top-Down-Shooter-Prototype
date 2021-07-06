@@ -7,6 +7,18 @@ using UnityEngine;
 
 public class Zombie : Character
 {
+    #region Enums
+    
+    private enum State
+    {
+        Idle,
+        Attack,
+        Chasing
+    }
+
+    #endregion
+    
+    
     #region Variables
     
     [Header("Vision Settings")]
@@ -20,6 +32,7 @@ public class Zombie : Character
     
     [Header("Read Only")]
     [ReadOnly] [SerializeField] private State currentState;
+    [ReadOnly] [SerializeField] private float attackTimer;
 
     private EnemyMovement movement;
     private EnemyAnimation animation;
@@ -27,30 +40,14 @@ public class Zombie : Character
     private Collider2D selfCollider;
     private SpriteRenderer selfSpriteRenderer;
     private HealthBar healthBar;
-
-    private AIPath aiPath;
-    private AIDestinationSetter aiDestinationSetter;
     
     private Vector3 playerPosition;
     private Vector3 selfPosition;
     private Vector3 playerDirection;
     private float distanceToPlayer;
-    private float attackTimer;
-    
-    #endregion
-
-
-    #region Enums
-    
-    private enum State
-    {
-        Idle,
-        Attack,
-        Chasing
-    }
 
     #endregion
-    
+
     
     #region Unity lifecycle
 
@@ -61,8 +58,6 @@ public class Zombie : Character
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         healthBar = GetComponentInChildren<HealthBar>();
-        aiPath = GetComponent<AIPath>();
-        aiDestinationSetter = GetComponent<AIDestinationSetter>();
         
         InvokeOnCreated();
     }
@@ -178,37 +173,46 @@ public class Zombie : Character
 
         var ray = Physics2D.Raycast(selfPosition, playerDirection, distanceToPlayer, obstacleMask);
 
-        if (ray.collider) return;
+        if (ray.collider != null) return;
         
-        movement.Move(playerDirection);
-        movement.Rotate(playerDirection);
-        animation.SetWalkAnimationTrigger();
+        animation.ActivateTriggerIdle(false);
+        animation.SetBoolIsMoving(true);
+        movement.SetTargetToChase(player.transform);
+        movement.ActivateAIPath(true);
     }
     
     private void AttackState()
+    
     {
-        movement.Rotate(playerDirection);
-        
+        movement.SetTargetToChase(player.transform);
+        movement.ActivateAIPath(true);
+        animation.ActivateTriggerIdle(false);
+
         attackTimer -= Time.deltaTime;
 
         if (attackTimer <= 0)
         {
             ResetAttackTimer();
-            animation.PlayAttackAnimation();
+            animation.SetTriggerAttack(true);
         }
     }
 
     private void IdleState()
     {
-        movement.SetVelocitiesToZero();
+        animation.SetBoolIsMoving(false);
+        animation.ActivateTriggerIdle(true);
+        movement.SetTargetToChase(null);
+        movement.ActivateAIPath(false);
     }
 
     protected override void Death()
     {
         base.Death();
-        animation.PlayDeathAnimation();
+        animation.ActivateTriggerDie(true);
+        animation.SetBoolIsMoving(false);
         selfSpriteRenderer.sortingOrder = -1;
-        movement.RbSleepOn();
+        movement.SetTargetToChase(null);
+        movement.ActivateAIPath(false);
         selfCollider.enabled = false;
         healthBar.gameObject.SetActive(false);
         

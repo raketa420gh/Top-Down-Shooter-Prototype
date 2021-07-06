@@ -1,22 +1,15 @@
 using UnityEngine;
+using Pathfinding;
+
+[RequireComponent(typeof(AIPath))]
+[RequireComponent(typeof(AIDestinationSetter))]
 
 public class EnemyMovement : MonoBehaviour
 {
     #region Variables
     
-    [Header("Movement Settings")]
-    [SerializeField] [Min(1f)] private float moveSpeed;
-    
-    private Transform playerBodyTransform;
-    private Rigidbody2D selfRigibody;
-
-    #endregion
-
-
-    #region Properties
-
-    public float MoveSpeed => moveSpeed;
-    public Rigidbody2D SelfRigidbody2D => selfRigibody;
+    private AIPath aiPath;
+    private AIDestinationSetter aiDestinationSetter;
 
     #endregion
 
@@ -25,8 +18,13 @@ public class EnemyMovement : MonoBehaviour
 
     private void Awake()
     {
-        playerBodyTransform = transform;
-        selfRigibody = GetComponent<Rigidbody2D>();
+        aiPath = GetComponent<AIPath>();
+        aiDestinationSetter = GetComponent<AIDestinationSetter>();
+    }
+
+    private void Start()
+    {
+        SetTargetToChase(null);
     }
 
     #endregion
@@ -34,25 +32,14 @@ public class EnemyMovement : MonoBehaviour
 
     #region Public methods
 
-    public void Move(Vector3 direction)
+    public void ActivateAIPath(bool isActive)
     {
-        selfRigibody.velocity = direction.normalized * (moveSpeed * Time.fixedDeltaTime);
+        aiPath.enabled = isActive;
     }
 
-    public void Rotate(Vector3 direction)
+    public void SetTargetToChase(Transform target)
     {
-        playerBodyTransform.up = direction;
-    }
-
-    public void SetVelocitiesToZero()
-    {
-        selfRigibody.velocity = Vector2.zero;
-        selfRigibody.angularVelocity = 0;
-    }
-
-    public void RbSleepOn()
-    {
-        selfRigibody.Sleep();
+        aiDestinationSetter.target = target;
     }
 
     #endregion

@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 5
-  visionRadius: 10
-  attackRadius: 2
+  visionRadius: 8
+  attackRadius: 2.1
   obstacleMask:
     serializedVersion: 2
     m_Bits: 2048
@@ -110,7 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70280f11bbf8b0441bc803f36e2506e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 150
 --- !u!114 &6951149417448694398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +168,7 @@ MonoBehaviour:
   repathRate: 0.5
   canSearch: 1
   canMove: 1
-  maxSpeed: 1
+  maxSpeed: 1.5
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2
@@ -183,7 +182,7 @@ MonoBehaviour:
   slowdownDistance: 2
   pickNextWaypointDist: 2
   endReachedDistance: 1
-  alwaysDrawGizmos: 0
+  alwaysDrawGizmos: 1
   slowWhenNotFacingTarget: 1
   whenCloseToDestination: 0
   constrainInsideGraph: 0
