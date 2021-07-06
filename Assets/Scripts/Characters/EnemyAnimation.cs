@@ -28,7 +28,7 @@ public class EnemyAnimation : MonoBehaviour
 
     public void ActivateTriggerIdle(bool isActive)
     {
-        if (!isActive)
+        if (isActive)
         {
             animator.SetTrigger(AnimationTriggerNames.Idle);
         }
@@ -40,7 +40,7 @@ public class EnemyAnimation : MonoBehaviour
     
     public void ActivateTriggerDie(bool isActive)
     {
-        if (!isActive)
+        if (isActive)
         {
             animator.SetTrigger(AnimationTriggerNames.Die);
         }
@@ -50,16 +50,9 @@ public class EnemyAnimation : MonoBehaviour
         }
     }
 
-    public void SetTriggerAttack(bool isActive)
+    public void SetTriggerAttack()
     {
-        if (!isActive)
-        {
-            animator.SetTrigger(AnimationTriggerNames.Attack);
-        }
-        else
-        {
-            animator.ResetTrigger(AnimationTriggerNames.Attack);
-        }
+        animator.SetTrigger(AnimationTriggerNames.Attack);
     }
 
     #endregion

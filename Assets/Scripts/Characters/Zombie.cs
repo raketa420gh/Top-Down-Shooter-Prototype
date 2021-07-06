@@ -186,14 +186,15 @@ public class Zombie : Character
     {
         movement.SetTargetToChase(player.transform);
         movement.ActivateAIPath(true);
+        animation.SetBoolIsMoving(false);
         animation.ActivateTriggerIdle(false);
 
         attackTimer -= Time.deltaTime;
 
         if (attackTimer <= 0)
         {
+            animation.SetTriggerAttack();
             ResetAttackTimer();
-            animation.SetTriggerAttack(true);
         }
     }
 
