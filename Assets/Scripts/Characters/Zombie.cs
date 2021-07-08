@@ -1,5 +1,4 @@
 using NaughtyAttributes;
-using Pathfinding;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyMovement))]
@@ -30,6 +29,12 @@ public class Zombie : Character
     [SerializeField] [Min(1)] private int attackDamage;
     [SerializeField] [Min(0.5f)] private float attackCooldown;
     
+    [Header("States Settings")]
+    [SerializeField] private StateMachine zombieStateMachine;
+    [SerializeField] private ZombieIdleState idleState;
+    [SerializeField] private ZombieChasingState chasingState;
+    [SerializeField] private ZombieAttackState attackState;
+    
     [Header("Read Only")]
     [ReadOnly] [SerializeField] private State currentState;
     [ReadOnly] [SerializeField] private float attackTimer;
@@ -50,7 +55,18 @@ public class Zombie : Character
 
     
     #region Unity lifecycle
+    
+    private void OnDrawGizmos()
+    {
+        selfPosition = transform.position;
+        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(selfPosition, visionRadius);
 
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(selfPosition, attackRadius);
+    }
+    
     private void Awake()
     {
         animation = GetComponent<EnemyAnimation>();
@@ -67,6 +83,13 @@ public class Zombie : Character
         base.Start();
         player = FindObjectOfType<Player>();
         attackTimer = 0;
+        
+        //zombieStateMachine = new StateMachine();
+        idleState = new ZombieIdleState(this, zombieStateMachine);
+        chasingState = new ZombieChasingState(this, zombieStateMachine);
+        attackState = new ZombieAttackState(this, zombieStateMachine);
+        
+        zombieStateMachine.Initialize(idleState);
     }
 
     private void OnEnable()
@@ -87,18 +110,8 @@ public class Zombie : Character
         }
         
         UpdateDistanceToPlayer();
-        UpdateCurrentState();
-    }
-
-    private void OnDrawGizmos()
-    {
-        selfPosition = transform.position;
         
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(selfPosition, visionRadius);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(selfPosition, attackRadius);
+        zombieStateMachine.CurrentState.LogicUpdate();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -125,7 +138,7 @@ public class Zombie : Character
         distanceToPlayer = Vector3.Distance(selfPosition, playerPosition);
     }
 
-    private void UpdateCurrentState()
+    private void UpdateStates()
     {
         if (distanceToPlayer < attackRadius)
         {
@@ -143,7 +156,42 @@ public class Zombie : Character
 
     private void SetState(State newState)
     {
-        switch (newState)
+        if (currentState == newState)
+
+            switch (newState)
+        {
+            case State.Idle:
+            {
+                animation.SetBoolIsMoving(false);
+                animation.ActivateTriggerIdle(true);
+                movement.SetTargetToChase(null);
+                movement.ActivateAIPath(false);
+            }
+                break;
+            
+            case State.Attack:
+            {
+                movement.ActivateAIPath(true);
+                animation.SetBoolIsMoving(false);
+                animation.ActivateTriggerIdle(false);
+            }
+                break;
+
+            case State.Chasing:
+            {
+                animation.ActivateTriggerIdle(false);
+                animation.SetBoolIsMoving(true);
+                movement.ActivateAIPath(true);
+            }
+                break;
+        }
+        
+        currentState = newState;
+    }
+
+    private void UpdateCurrentState()
+    {
+        switch (currentState)
         {
             case State.Idle:
             {
@@ -163,8 +211,6 @@ public class Zombie : Character
             }
                 break;
         }
-        
-        currentState = newState;
     }
     
     private void ChasePlayerState()
@@ -175,19 +221,13 @@ public class Zombie : Character
 
         if (ray.collider != null) return;
         
-        animation.ActivateTriggerIdle(false);
-        animation.SetBoolIsMoving(true);
         movement.SetTargetToChase(player.transform);
-        movement.ActivateAIPath(true);
     }
     
     private void AttackState()
     
     {
         movement.SetTargetToChase(player.transform);
-        movement.ActivateAIPath(true);
-        animation.SetBoolIsMoving(false);
-        animation.ActivateTriggerIdle(false);
 
         attackTimer -= Time.deltaTime;
 
@@ -200,10 +240,7 @@ public class Zombie : Character
 
     private void IdleState()
     {
-        animation.SetBoolIsMoving(false);
-        animation.ActivateTriggerIdle(true);
-        movement.SetTargetToChase(null);
-        movement.ActivateAIPath(false);
+        
     }
 
     protected override void Death()
