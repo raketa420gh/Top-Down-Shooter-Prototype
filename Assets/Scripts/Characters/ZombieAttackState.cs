@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class ZombieAttackState : State
 {
     public ZombieAttackState(Character character, StateMachine stateMachine) : base(character, stateMachine)
@@ -7,20 +9,23 @@ public class ZombieAttackState : State
     public override void Enter()
     {
         base.Enter();
+        movement.ActivateAIPath(true);
+        animation.SetBoolIsMoving(false);
+        animation.ActivateTriggerIdle(false);
     }
 
-    public override void Exit()
+    public override void LogicUpdate()
     {
-        base.Exit();
-    }
+        base.LogicUpdate();
+        
+        movement.SetTargetToChase(player.transform);
 
-    public override void HandleInput()
-    {
-        base.HandleInput();
-    }
+        attackTimer -= Time.deltaTime;
 
-    public override void PhysicsUpdate()
-    {
-        base.PhysicsUpdate();
+        if (attackTimer <= 0)
+        {
+            animation.SetTriggerAttack();
+            ResetAttackTimer();
+        }
     }
 }

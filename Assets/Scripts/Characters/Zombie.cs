@@ -6,18 +6,6 @@ using UnityEngine;
 
 public class Zombie : Character
 {
-    #region Enums
-    
-    private enum State
-    {
-        Idle,
-        Attack,
-        Chasing
-    }
-
-    #endregion
-    
-    
     #region Variables
     
     [Header("Vision Settings")]
@@ -84,7 +72,7 @@ public class Zombie : Character
         player = FindObjectOfType<Player>();
         attackTimer = 0;
         
-        //zombieStateMachine = new StateMachine();
+        zombieStateMachine = new StateMachine();
         idleState = new ZombieIdleState(this, zombieStateMachine);
         chasingState = new ZombieChasingState(this, zombieStateMachine);
         attackState = new ZombieAttackState(this, zombieStateMachine);
@@ -110,7 +98,6 @@ public class Zombie : Character
         }
         
         UpdateDistanceToPlayer();
-        
         zombieStateMachine.CurrentState.LogicUpdate();
     }
 
@@ -142,106 +129,18 @@ public class Zombie : Character
     {
         if (distanceToPlayer < attackRadius)
         {
-            SetState(State.Attack);
+            //SetState(State.Attack);
         }
         else if (distanceToPlayer < visionRadius)
         {
-            SetState(State.Chasing);
+            //SetState(State.Chasing);
         }
         else
         {
-            SetState(State.Idle);
-        }
-    }
-
-    private void SetState(State newState)
-    {
-        if (currentState == newState)
-
-            switch (newState)
-        {
-            case State.Idle:
-            {
-                animation.SetBoolIsMoving(false);
-                animation.ActivateTriggerIdle(true);
-                movement.SetTargetToChase(null);
-                movement.ActivateAIPath(false);
-            }
-                break;
-            
-            case State.Attack:
-            {
-                movement.ActivateAIPath(true);
-                animation.SetBoolIsMoving(false);
-                animation.ActivateTriggerIdle(false);
-            }
-                break;
-
-            case State.Chasing:
-            {
-                animation.ActivateTriggerIdle(false);
-                animation.SetBoolIsMoving(true);
-                movement.ActivateAIPath(true);
-            }
-                break;
-        }
-        
-        currentState = newState;
-    }
-
-    private void UpdateCurrentState()
-    {
-        switch (currentState)
-        {
-            case State.Idle:
-            {
-                IdleState();
-            }
-                break;
-            
-            case State.Attack:
-            {
-                AttackState();
-            }
-                break;
-
-            case State.Chasing:
-            {
-                ChasePlayerState();
-            }
-                break;
+            //SetState(State.Idle);
         }
     }
     
-    private void ChasePlayerState()
-    {
-        Debug.DrawRay(selfPosition, playerDirection, Color.blue);
-
-        var ray = Physics2D.Raycast(selfPosition, playerDirection, distanceToPlayer, obstacleMask);
-
-        if (ray.collider != null) return;
-        
-        movement.SetTargetToChase(player.transform);
-    }
-    
-    private void AttackState()
-    
-    {
-        movement.SetTargetToChase(player.transform);
-
-        attackTimer -= Time.deltaTime;
-
-        if (attackTimer <= 0)
-        {
-            animation.SetTriggerAttack();
-            ResetAttackTimer();
-        }
-    }
-
-    private void IdleState()
-    {
-        
-    }
 
     protected override void Death()
     {

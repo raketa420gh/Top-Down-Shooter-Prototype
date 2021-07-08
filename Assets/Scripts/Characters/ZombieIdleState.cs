@@ -7,20 +7,9 @@ public class ZombieIdleState : State
     public override void Enter()
     {
         base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
-    public override void HandleInput()
-    {
-        base.HandleInput();
-    }
-
-    public override void PhysicsUpdate()
-    {
-        base.PhysicsUpdate();
+        animation.SetBoolIsMoving(false);
+        animation.ActivateTriggerIdle(true);
+        movement.SetTargetToChase(null);
+        movement.ActivateAIPath(false);
     }
 }
