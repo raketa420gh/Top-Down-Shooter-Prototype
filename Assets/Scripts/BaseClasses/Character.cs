@@ -32,6 +32,11 @@ public class Character : MonoBehaviour
 
     #region Unity lifecycle
 
+    protected virtual void Awake()
+    {
+        OnCreated?.Invoke();
+    }
+
     protected virtual void Start()
     {
         RestoreHealth();
@@ -90,11 +95,6 @@ public class Character : MonoBehaviour
         isAlive = false;
         Debug.Log($"{gameObject.name} погиб.");
         Destroy(gameObject, 120f);
-    }
-
-    protected void InvokeOnCreated()
-    {
-        OnCreated?.Invoke();
     }
     
     protected void InvokeOnDied()

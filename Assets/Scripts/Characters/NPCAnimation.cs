@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyAnimation : MonoBehaviour
+public class NPCAnimation : MonoBehaviour
 {
     #region Variables
 
@@ -26,28 +26,14 @@ public class EnemyAnimation : MonoBehaviour
         animator.SetBool(AnimationTriggerNames.IsMoving, isActive);
     }
 
-    public void ActivateTriggerIdle(bool isActive)
+    public void ActivateTriggerIdle()
     {
-        if (isActive)
-        {
-            animator.SetTrigger(AnimationTriggerNames.Idle);
-        }
-        else
-        {
-            animator.ResetTrigger(AnimationTriggerNames.Idle);
-        }
+        animator.SetTrigger(AnimationTriggerNames.Idle);
     }
     
-    public void ActivateTriggerDie(bool isActive)
+    public void ActivateTriggerDie()
     {
-        if (isActive)
-        {
-            animator.SetTrigger(AnimationTriggerNames.Die);
-        }
-        else
-        {
-            animator.ResetTrigger(AnimationTriggerNames.Die);
-        }
+        animator.SetTrigger(AnimationTriggerNames.Die);
     }
 
     public void SetTriggerAttack()

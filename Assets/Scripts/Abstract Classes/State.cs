@@ -1,11 +1,11 @@
 ﻿public abstract class State
 {
-    protected Character character;
+    protected NPC npc;
     protected StateMachine stateMachine;
 
-    protected State(Character character, StateMachine stateMachine)
+    protected State(NPC npc, StateMachine stateMachine)
     {
-        this.character = character;
+        this.npc = npc;
         this.stateMachine = stateMachine;
     }
 

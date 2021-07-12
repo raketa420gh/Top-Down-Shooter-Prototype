@@ -1,10 +1,10 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyMovement))]
-[RequireComponent(typeof(EnemyAnimation))]
+[RequireComponent(typeof(NPCMovement))]
+[RequireComponent(typeof(NPCAnimation))]
 
-public class Zombie : Character
+public class NPC : Character
 {
     #region Variables
     
@@ -17,18 +17,14 @@ public class Zombie : Character
     [SerializeField] [Min(1)] private int attackDamage;
     [SerializeField] [Min(0.5f)] private float attackCooldown;
     
-    [Header("States Settings")]
-    [SerializeField] private StateMachine zombieStateMachine;
-    [SerializeField] private ZombieIdleState idleState;
-    [SerializeField] private ZombieChasingState chasingState;
-    [SerializeField] private ZombieAttackState attackState;
+    [Header("State Settings")]
+    [SerializeField] private StateMachine stateMachine;
     
     [Header("Read Only")]
-    [ReadOnly] [SerializeField] private State currentState;
     [ReadOnly] [SerializeField] private float attackTimer;
 
-    private EnemyMovement movement;
-    private EnemyAnimation animation;
+    private NPCMovement movement;
+    private NPCAnimation animation;
     private Player player;
     private Collider2D selfCollider;
     private SpriteRenderer selfSpriteRenderer;
@@ -38,9 +34,28 @@ public class Zombie : Character
     private Vector3 selfPosition;
     private Vector3 playerDirection;
     private float distanceToPlayer;
-
+    
     #endregion
+    
+    
+    #region Properties
 
+    public float VisionRadius => visionRadius;
+    public float AttackRadius => attackRadius;
+    public LayerMask ObstacleMask => obstacleMask;
+    public NPCMovement Movement => movement;
+    public NPCAnimation Animation => animation;
+    public Player Player => player;
+    public Collider2D SelfCollider => selfCollider;
+    public SpriteRenderer SelfSpriteRenderer => selfSpriteRenderer;
+    public HealthBar HealthBar => healthBar;
+    public Vector3 PlayerPosition => playerPosition;
+    public Vector3 SelfPosition => selfPosition;
+    public Vector3 PlayerDirection => playerDirection;
+    public float DistanceToPlayer => distanceToPlayer;
+    
+    #endregion
+    
     
     #region Unity lifecycle
     
@@ -54,16 +69,16 @@ public class Zombie : Character
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(selfPosition, attackRadius);
     }
-    
-    private void Awake()
+
+    protected override void Awake()
     {
-        animation = GetComponent<EnemyAnimation>();
-        movement = GetComponent<EnemyMovement>();
+        animation = GetComponent<NPCAnimation>();
+        movement = GetComponent<NPCMovement>();
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         healthBar = GetComponentInChildren<HealthBar>();
         
-        InvokeOnCreated();
+        base.Awake();
     }
 
     protected override void Start()
@@ -72,12 +87,12 @@ public class Zombie : Character
         player = FindObjectOfType<Player>();
         attackTimer = 0;
         
-        zombieStateMachine = new StateMachine();
-        idleState = new ZombieIdleState(this, zombieStateMachine);
-        chasingState = new ZombieChasingState(this, zombieStateMachine);
-        attackState = new ZombieAttackState(this, zombieStateMachine);
+        //stateMachine = new StateMachine();
+        //idleState = new IdleState(this, zombieStateMachine);
+        //chasingState = new ChaseState(this, zombieStateMachine);
+        //attackState = new AttackState(this, zombieStateMachine);
         
-        zombieStateMachine.Initialize(idleState);
+        //zombieStateMachine.Initialize(idleState);
     }
 
     private void OnEnable()
@@ -98,7 +113,7 @@ public class Zombie : Character
         }
         
         UpdateDistanceToPlayer();
-        zombieStateMachine.CurrentState.LogicUpdate();
+        //stateMachine.CurrentState.LogicUpdate();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -145,10 +160,10 @@ public class Zombie : Character
     protected override void Death()
     {
         base.Death();
-        animation.ActivateTriggerDie(true);
+        animation.ActivateTriggerDie();
         animation.SetBoolIsMoving(false);
         selfSpriteRenderer.sortingOrder = -1;
-        movement.SetTargetToChase(null);
+        movement.SetDestinationTarget(null);
         movement.ActivateAIPath(false);
         selfCollider.enabled = false;
         healthBar.gameObject.SetActive(false);

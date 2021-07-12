@@ -4,7 +4,7 @@ using Pathfinding;
 [RequireComponent(typeof(AIPath))]
 [RequireComponent(typeof(AIDestinationSetter))]
 
-public class EnemyMovement : MonoBehaviour
+public class NPCMovement : MonoBehaviour
 {
     #region Variables
     
@@ -24,7 +24,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void Start()
     {
-        SetTargetToChase(null);
+        SetDestinationTarget(null);
     }
 
     #endregion
@@ -37,7 +37,7 @@ public class EnemyMovement : MonoBehaviour
         aiPath.enabled = isActive;
     }
 
-    public void SetTargetToChase(Transform target)
+    public void SetDestinationTarget(Transform target)
     {
         aiDestinationSetter.target = target;
     }

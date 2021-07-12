@@ -34,8 +34,6 @@ public class Player : Character
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         camera = Camera.main;
-        
-        InvokeOnCreated();
     }
 
     private void Update()
