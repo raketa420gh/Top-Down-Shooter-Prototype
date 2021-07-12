@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class AttackState : State
 {
     public AttackState(NPC npc, StateMachine stateMachine) : base(npc, stateMachine)
@@ -17,12 +19,36 @@ public class AttackState : State
         
         npc.Movement.SetDestinationTarget(npc.Player.transform);
 
-        //attackTimer -= Time.deltaTime;
+        npc.SubtractAttackTime();
 
-        //if (attackTimer <= 0)
-        //{
-        //    animation.SetTriggerAttack();
-        //    ResetAttackTimer();
-        //}
+        if (npc.AttackTimer <= 0)
+        {
+            npc.Animation.SetTriggerAttack();
+            npc.ResetAttackTimer();
+        }
     }
+
+    #region Unity lifecycle
+
+    private void OnEnable()
+    {
+        ZombieAnimationEventHandler.OnAttacked += ZombieAnimationEventHandlerOnAttacked;
+    }
+
+    private void OnDisable()
+    {
+        ZombieAnimationEventHandler.OnAttacked -= ZombieAnimationEventHandlerOnAttacked;
+    }
+
+    #endregion
+    
+    
+    #region Event Handlers
+    
+    private void ZombieAnimationEventHandlerOnAttacked()
+    {
+        npc.Player.TakeDamage(npc.AttackDamage);
+    }
+    
+    #endregion
 }

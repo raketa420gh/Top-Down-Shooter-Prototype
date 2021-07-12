@@ -19,7 +19,10 @@ public class NPC : Character
     
     [Header("State Settings")]
     [SerializeField] private StateMachine stateMachine;
-    
+    private IdleState idleState;
+    private ChaseState chaseState;
+    private AttackState attackState;
+
     [Header("Read Only")]
     [ReadOnly] [SerializeField] private float attackTimer;
 
@@ -42,6 +45,8 @@ public class NPC : Character
 
     public float VisionRadius => visionRadius;
     public float AttackRadius => attackRadius;
+    public int AttackDamage => attackDamage;
+    public float AttackTimer => attackTimer;
     public LayerMask ObstacleMask => obstacleMask;
     public NPCMovement Movement => movement;
     public NPCAnimation Animation => animation;
@@ -53,7 +58,7 @@ public class NPC : Character
     public Vector3 SelfPosition => selfPosition;
     public Vector3 PlayerDirection => playerDirection;
     public float DistanceToPlayer => distanceToPlayer;
-    
+
     #endregion
     
     
@@ -87,24 +92,14 @@ public class NPC : Character
         player = FindObjectOfType<Player>();
         attackTimer = 0;
         
-        //stateMachine = new StateMachine();
-        //idleState = new IdleState(this, zombieStateMachine);
-        //chasingState = new ChaseState(this, zombieStateMachine);
-        //attackState = new AttackState(this, zombieStateMachine);
+        stateMachine = new StateMachine();
+        idleState = new IdleState(this, stateMachine);
+        chaseState = new ChaseState(this, stateMachine);
+        attackState = new AttackState(this, stateMachine);
         
-        //zombieStateMachine.Initialize(idleState);
+        stateMachine.Initialize(idleState);
     }
-
-    private void OnEnable()
-    {
-        ZombieAnimationEventHandler.OnAttacked += ZombieAnimationEventHandlerOnAttacked;
-    }
-
-    private void OnDisable()
-    {
-        ZombieAnimationEventHandler.OnAttacked -= ZombieAnimationEventHandlerOnAttacked;
-    }
-
+    
     private void Update()
     {
         if (!IsAlive || !player.IsAlive)
@@ -113,7 +108,7 @@ public class NPC : Character
         }
         
         UpdateDistanceToPlayer();
-        //stateMachine.CurrentState.LogicUpdate();
+        stateMachine.CurrentState.LogicUpdate();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -129,6 +124,21 @@ public class NPC : Character
 
     #endregion
 
+
+    #region Public methods
+    
+    public void ResetAttackTimer()
+    {
+        attackTimer = attackCooldown;
+    }
+
+    public void SubtractAttackTime()
+    {
+        attackTimer -= Time.deltaTime;
+    }
+
+    #endregion
+
     
     #region Private methods
     
@@ -139,23 +149,6 @@ public class NPC : Character
         playerDirection = playerPosition - selfPosition;
         distanceToPlayer = Vector3.Distance(selfPosition, playerPosition);
     }
-
-    private void UpdateStates()
-    {
-        if (distanceToPlayer < attackRadius)
-        {
-            //SetState(State.Attack);
-        }
-        else if (distanceToPlayer < visionRadius)
-        {
-            //SetState(State.Chasing);
-        }
-        else
-        {
-            //SetState(State.Idle);
-        }
-    }
-    
 
     protected override void Death()
     {
@@ -170,21 +163,6 @@ public class NPC : Character
         
         InvokeOnDied();
     }
-
-    private void ResetAttackTimer()
-    {
-        attackTimer = attackCooldown;
-    }
     
-    #endregion
-
-
-    #region Event Handlers
-
-    private void ZombieAnimationEventHandlerOnAttacked()
-    {
-        player.TakeDamage(attackDamage);
-    }
-
     #endregion
 }

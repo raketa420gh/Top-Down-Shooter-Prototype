@@ -1,7 +1,7 @@
 ﻿public abstract class State
 {
-    protected NPC npc;
-    protected StateMachine stateMachine;
+    protected readonly NPC npc;
+    protected readonly StateMachine stateMachine;
 
     protected State(NPC npc, StateMachine stateMachine)
     {
