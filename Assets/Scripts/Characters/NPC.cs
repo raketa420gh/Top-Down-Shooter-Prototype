@@ -1,8 +1,11 @@
 using NaughtyAttributes;
 using UnityEngine;
 
+[RequireComponent(typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(NPCMovement))]
 [RequireComponent(typeof(NPCAnimation))]
+[RequireComponent(typeof(StateMachine))]
 
 public class NPC : Character
 {
@@ -16,15 +19,14 @@ public class NPC : Character
     [Header("Attack Settings")]
     [SerializeField] [Min(1)] private int attackDamage;
     [SerializeField] [Min(0.5f)] private float attackCooldown;
-    
-    [Header("State Settings")]
-    [SerializeField] private StateMachine stateMachine;
-    private IdleState idleState;
-    private ChaseState chaseState;
-    private AttackState attackState;
 
     [Header("Read Only")]
     [ReadOnly] [SerializeField] private float attackTimer;
+    
+    private StateMachine stateMachine;
+    private IdleState idleState;
+    private ChaseState chaseState;
+    private AttackState attackState;
 
     private NPCMovement movement;
     private NPCAnimation animation;
@@ -32,7 +34,6 @@ public class NPC : Character
     private Collider2D selfCollider;
     private SpriteRenderer selfSpriteRenderer;
     private HealthBar healthBar;
-    
     private Vector3 playerPosition;
     private Vector3 selfPosition;
     private Vector3 playerDirection;
@@ -82,6 +83,7 @@ public class NPC : Character
         selfCollider = GetComponent<Collider2D>();
         selfSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         healthBar = GetComponentInChildren<HealthBar>();
+        stateMachine = GetComponent<StateMachine>();
         
         base.Awake();
     }
@@ -92,7 +94,6 @@ public class NPC : Character
         player = FindObjectOfType<Player>();
         attackTimer = 0;
         
-        stateMachine = new StateMachine();
         idleState = new IdleState(this, stateMachine);
         chaseState = new ChaseState(this, stateMachine);
         attackState = new AttackState(this, stateMachine);

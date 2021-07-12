@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1405939697406015774}
   - component: {fileID: 8007235644055261842}
   - component: {fileID: 8145769740992964376}
+  - component: {fileID: 6160496420406525845}
   m_Layer: 7
   m_Name: Zombie
   m_TagString: Enemy
@@ -97,7 +98,6 @@ MonoBehaviour:
     m_Bits: 2048
   attackDamage: 2
   attackCooldown: 2
-  stateMachine: {fileID: 1477645998937239743, guid: c8cc746f2f8e6f0438ccfa43444c0b98, type: 3}
   attackTimer: 0
 --- !u!114 &5541226841472144896
 MonoBehaviour:
@@ -201,6 +201,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   target: {fileID: 0}
+--- !u!114 &6160496420406525845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279976822419905903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b86d05d873d9d940afc1cdbd0812b8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8413099405333454609
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,7 +342,7 @@ PrefabInstance:
     - target: {fileID: 2112661884635988813, guid: a7f9a52d764748044a096afca52eff07, type: 3}
       propertyPath: character
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7184730108511522632}
     - target: {fileID: 2127066853216406049, guid: a7f9a52d764748044a096afca52eff07, type: 3}
       propertyPath: m_Name
       value: HP Bar Canvas
