@@ -7,9 +7,9 @@ public class AttackState : State
     public override void Enter()
     {
         base.Enter();
-        npc.Movement.ActivateAIPath(false);
+        npc.Movement.ActivateAIPath(true);
         npc.Animation.SetBoolIsMoving(false);
-        npc.Movement.SetDestinationTarget(null);
+        npc.Movement.SetDestinationTarget(npc.Player.transform);
     }
 
     public override void LogicUpdate()
@@ -24,28 +24,4 @@ public class AttackState : State
             npc.ResetAttackTimer();
         }
     }
-
-    #region Unity lifecycle
-
-    private void OnEnable()
-    {
-        ZombieAnimationEventHandler.OnAttacked += ZombieAnimationEventHandlerOnAttacked;
-    }
-
-    private void OnDisable()
-    {
-        ZombieAnimationEventHandler.OnAttacked -= ZombieAnimationEventHandlerOnAttacked;
-    }
-
-    #endregion
-    
-    
-    #region Event Handlers
-    
-    private void ZombieAnimationEventHandlerOnAttacked()
-    {
-        npc.Player.TakeDamage(npc.AttackDamage);
-    }
-    
-    #endregion
 }

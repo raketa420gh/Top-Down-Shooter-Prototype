@@ -124,6 +124,16 @@ public class NPC : Character
             Destroy(other.gameObject);
         }
     }
+    
+    private void OnEnable()
+    {
+        ZombieAnimationEventHandler.OnAttacked += ZombieAnimationEventHandlerOnAttacked;
+    }
+
+    private void OnDisable()
+    {
+        ZombieAnimationEventHandler.OnAttacked -= ZombieAnimationEventHandlerOnAttacked;
+    }
 
     #endregion
 
@@ -175,5 +185,15 @@ public class NPC : Character
         base.Death();
     }
 
+    #endregion
+    
+    
+    #region Event Handlers
+    
+    private void ZombieAnimationEventHandlerOnAttacked()
+    {
+        player.TakeDamage(attackDamage);
+    }
+    
     #endregion
 }
