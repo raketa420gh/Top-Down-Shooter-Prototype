@@ -91,12 +91,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
-  visionRadius: 10
-  attackRadius: 2
+  visionDistance: 10
+  attackDistance: 2
   obstacleMask:
     serializedVersion: 2
     m_Bits: 2048
-  attackDamage: 2
+  attackDamage: 5
   attackCooldown: 2
   attackTimer: 0
 --- !u!114 &5541226841472144896
@@ -182,8 +182,8 @@ MonoBehaviour:
   rotationSpeed: 360
   slowdownDistance: 2
   pickNextWaypointDist: 2
-  endReachedDistance: 1
-  alwaysDrawGizmos: 1
+  endReachedDistance: 1.5
+  alwaysDrawGizmos: 0
   slowWhenNotFacingTarget: 1
   whenCloseToDestination: 0
   constrainInsideGraph: 0

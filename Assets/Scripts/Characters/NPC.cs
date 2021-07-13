@@ -12,8 +12,8 @@ public class NPC : Character
     #region Variables
     
     [Header("Vision Settings")]
-    [SerializeField] [Range(5f, 15f)] private float visionRadius;
-    [SerializeField] [Range(2f, 5f)] private float attackRadius;
+    [SerializeField] [Range(5f, 15f)] private float visionDistance;
+    [SerializeField] [Range(1.75f, 5f)] private float attackDistance;
     [SerializeField] private LayerMask obstacleMask;
     
     [Header("Attack Settings")]
@@ -27,6 +27,7 @@ public class NPC : Character
     private IdleState idleState;
     private ChaseState chaseState;
     private AttackState attackState;
+    private DeathState deathState;
 
     private NPCMovement movement;
     private NPCAnimation animation;
@@ -44,8 +45,8 @@ public class NPC : Character
     
     #region Properties
 
-    public float VisionRadius => visionRadius;
-    public float AttackRadius => attackRadius;
+    public float VisionDistance => visionDistance;
+    public float AttackDistance => attackDistance;
     public int AttackDamage => attackDamage;
     public float AttackTimer => attackTimer;
     public LayerMask ObstacleMask => obstacleMask;
@@ -70,10 +71,10 @@ public class NPC : Character
         selfPosition = transform.position;
         
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(selfPosition, visionRadius);
+        Gizmos.DrawWireSphere(selfPosition, visionDistance);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(selfPosition, attackRadius);
+        Gizmos.DrawWireSphere(selfPosition, attackDistance);
     }
 
     protected override void Awake()
@@ -92,11 +93,11 @@ public class NPC : Character
     {
         base.Start();
         player = FindObjectOfType<Player>();
-        attackTimer = 0;
         
         idleState = new IdleState(this, stateMachine);
         chaseState = new ChaseState(this, stateMachine);
         attackState = new AttackState(this, stateMachine);
+        deathState = new DeathState(this, stateMachine);
         
         stateMachine.Initialize(idleState);
     }
@@ -109,6 +110,7 @@ public class NPC : Character
         }
         
         UpdateDistanceToPlayer();
+        CheckCurrentState();
         stateMachine.CurrentState.LogicUpdate();
     }
 
@@ -151,19 +153,27 @@ public class NPC : Character
         distanceToPlayer = Vector3.Distance(selfPosition, playerPosition);
     }
 
+    private void CheckCurrentState()
+    {
+        if (distanceToPlayer < attackDistance)
+        {
+            stateMachine.ChangeState(attackState);
+        }
+        else if (distanceToPlayer < visionDistance)
+        {
+            stateMachine.ChangeState(chaseState);
+        }
+        else
+        {
+            stateMachine.ChangeState(idleState);
+        }
+    }
+
     protected override void Death()
     {
+        stateMachine.ChangeState(deathState);
         base.Death();
-        animation.ActivateTriggerDie();
-        animation.SetBoolIsMoving(false);
-        selfSpriteRenderer.sortingOrder = -1;
-        movement.SetDestinationTarget(null);
-        movement.ActivateAIPath(false);
-        selfCollider.enabled = false;
-        healthBar.gameObject.SetActive(false);
-        
-        InvokeOnDied();
     }
-    
+
     #endregion
 }

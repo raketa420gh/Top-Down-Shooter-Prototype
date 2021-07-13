@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class AttackState : State
 {
     public AttackState(NPC npc, StateMachine stateMachine) : base(npc, stateMachine)
@@ -9,15 +7,14 @@ public class AttackState : State
     public override void Enter()
     {
         base.Enter();
-        npc.Movement.ActivateAIPath(true);
+        npc.Movement.ActivateAIPath(false);
         npc.Animation.SetBoolIsMoving(false);
+        npc.Movement.SetDestinationTarget(null);
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        
-        npc.Movement.SetDestinationTarget(npc.Player.transform);
 
         npc.SubtractAttackTime();
 

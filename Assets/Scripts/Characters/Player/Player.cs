@@ -102,14 +102,14 @@ public class Player : Character
 
     protected override void Death()
     {
-        base.Death();
         animation.PlayDeathAnimation();
         selfSpriteRenderer.sortingOrder = -1;
         selfCollider.enabled = false;
         movement.enabled = false;
         movement.SelfRigidbody.Sleep();
         
-        InvokeOnDied();
+        base.Death();
+        
     }
 
     #endregion

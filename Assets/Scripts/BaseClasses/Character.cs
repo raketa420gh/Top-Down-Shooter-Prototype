@@ -93,12 +93,8 @@ public class Character : MonoBehaviour
     protected virtual void Death()
     {
         isAlive = false;
-        Debug.Log($"{gameObject.name} погиб.");
         Destroy(gameObject, 120f);
-    }
-    
-    protected void InvokeOnDied()
-    {
+        
         OnDied?.Invoke();
     }
     
